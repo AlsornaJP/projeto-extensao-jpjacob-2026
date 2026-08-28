@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.model;
 
+import com.jacob.jp.projeto_extensao.dto.ItemDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private Long id;
+    private Integer id;
 
     @Column(name="quantidade", nullable=false)
     private Integer quantidade;
@@ -30,4 +31,12 @@ public class Item {
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="id_carrinho", referencedColumnName="id")
     private Carrinho carrinho;
+
+    // As associacoes vindas do DTO chegam como ids e sao resolvidas na camada de servico.
+
+    public Item(ItemDTO dto) {
+        this.id = dto.getId();
+        this.quantidade = dto.getQuantidade();
+        this.preco = dto.getPreco();
+    }
 }

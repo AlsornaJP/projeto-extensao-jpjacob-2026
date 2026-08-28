@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.model;
 
+import com.jacob.jp.projeto_extensao.dto.ClienteDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private Long id;
+    private Integer id;
 
     @Column(name="nome_cliente", nullable=false, length=150)
     private String nome;
@@ -36,4 +37,13 @@ public class Cliente {
 
     @OneToMany(mappedBy="cliente")
     private List<Pedido> pedidos = new ArrayList<>();
+
+    // As associacoes vindas do DTO chegam como ids e sao resolvidas na camada de servico.
+
+    public Cliente(ClienteDTO dto) {
+        this.id = dto.getId();
+        this.nome = dto.getNome();
+        this.email = dto.getEmail();
+        this.telefone = dto.getTelefone();
+    }
 }

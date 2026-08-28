@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Contexto local para assistentes de codigo (nao versionado) ###
+CLAUDE.md
