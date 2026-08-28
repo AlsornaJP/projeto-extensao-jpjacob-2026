@@ -52,6 +52,6 @@ INSERT INTO pedidos (data_pedido, hora_pedido, id_cliente, id_carrinho) VALUES
 
 -- 8. Entregas (uma por pedido, com status variados para testar o fluxo)
 INSERT INTO entregas (id_pedido, id_endereco, data_postagem, status) VALUES
-(1, 1, '2026-08-06', 'entregue'),
-(2, 2, '2026-08-07', 'pago'),
-(3, 3, '2026-08-07', 'pendente');
+(1, 1, '2026-08-06', 'ENTREGUE'),
+(2, 2, '2026-08-07', 'PAGO'),
+(3, 3, '2026-08-07', 'PENDENTE');
