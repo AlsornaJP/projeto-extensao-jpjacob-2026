@@ -13,11 +13,11 @@ INSERT INTO fornecedores (nome_fornecedor) VALUES
 ('Doceria da Roca');
 
 -- 3. Produtos (cada um com fornecedor obrigatorio)
-INSERT INTO produtos (nome_produto, descricao, preco, id_fornecedor) VALUES
-('Queijo Minas Artesanal 500g', 'Queijo curado tradicional da regiao de Tiradentes', 32.90, 1),
-('Cachaca Envelhecida 700ml', 'Cachaca artesanal envelhecida em barril de carvalho', 65.00, 2),
-('Doce de Leite Cremoso 300g', 'Doce de leite pastoso feito em tacho de cobre', 18.50, 3),
-('Linguica Artesanal Defumada 1kg', 'Linguica suina temperada e defumada na lenha', 42.00, 1);
+INSERT INTO produtos (nome_produto, descricao, preco, estoque, id_fornecedor) VALUES
+('Queijo Minas Artesanal 500g', 'Queijo curado tradicional da regiao de Tiradentes', 32.90, 40, 1),
+('Cachaca Envelhecida 700ml', 'Cachaca artesanal envelhecida em barril de carvalho', 65.00, 25, 2),
+('Doce de Leite Cremoso 300g', 'Doce de leite pastoso feito em tacho de cobre', 18.50, 60, 3),
+('Linguica Artesanal Defumada 1kg', 'Linguica suina temperada e defumada na lenha', 42.00, 15, 1);
 
 -- 4. Clientes (cada um com carrinho proprio)
 INSERT INTO clientes (nome_cliente, email, telefone, id_carrinho) VALUES

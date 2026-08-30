@@ -27,6 +27,9 @@ public class Produto {
     @Column(name="preco", nullable=false, precision=10, scale=2)
     private BigDecimal preco;
 
+    @Column(name="estoque", nullable=false)
+    private Integer estoque;
+
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="id_fornecedor", referencedColumnName="id")
     private Fornecedor fornecedor;
@@ -38,5 +41,21 @@ public class Produto {
         this.nome = dto.getNome();
         this.descricao = dto.getDescricao();
         this.preco = dto.getPreco();
+        this.estoque = dto.getEstoque() != null ? dto.getEstoque() : 0;
+    }
+
+    public Produto(ProdutoDTO dto, Fornecedor fornecedor) {
+        this(dto);
+        this.fornecedor = fornecedor;
+    }
+
+    // Alteracao pontual dos campos: evita expor setters na entidade gerenciada.
+    // O estoque fica de fora de proposito: so muda por operacao dedicada, nunca por
+    // uma edicao de nome/preco.
+    public void atualizarDados(String nome, String descricao, BigDecimal preco, Fornecedor fornecedor) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.fornecedor = fornecedor;
     }
 }

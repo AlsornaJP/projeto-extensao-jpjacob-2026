@@ -16,6 +16,7 @@ public class ProdutoDTO {
     private String nome;
     private String descricao;
     private BigDecimal preco;
+    private Integer estoque;
     private Integer idFornecedor;
 
     public ProdutoDTO(Produto produto) {
@@ -23,6 +24,7 @@ public class ProdutoDTO {
         this.nome = produto.getNome();
         this.descricao = produto.getDescricao();
         this.preco = produto.getPreco();
+        this.estoque = produto.getEstoque();
         this.idFornecedor = produto.getFornecedor() != null ? produto.getFornecedor().getId() : null;
     }
 }
