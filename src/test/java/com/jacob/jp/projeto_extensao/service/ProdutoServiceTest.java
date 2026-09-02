@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.service;
 
+import com.jacob.jp.projeto_extensao.dto.AtualizarProdutoDTO;
 import com.jacob.jp.projeto_extensao.dto.FornecedorDTO;
 import com.jacob.jp.projeto_extensao.dto.ProdutoDTO;
 import com.jacob.jp.projeto_extensao.dto.VarianteDTO;
@@ -63,6 +64,14 @@ class ProdutoServiceTest {
         dto.setVariantes(new ArrayList<>(List.of(
                 varianteDTO("500g", "49.90", 12),
                 varianteDTO("1kg", "89.90", 5))));
+        return dto;
+    }
+
+    private static AtualizarProdutoDTO atualizarDTO(String nome, Integer idFornecedor) {
+        AtualizarProdutoDTO dto = new AtualizarProdutoDTO();
+        dto.setNome(nome);
+        dto.setDescricao("Meia cura");
+        dto.setIdFornecedor(idFornecedor);
         return dto;
     }
 
@@ -167,11 +176,7 @@ class ProdutoServiceTest {
         when(produtoRepository.findById(1)).thenReturn(Optional.of(produtoSalvo()));
         when(fornecedorRepository.findById(8)).thenReturn(Optional.of(fornecedorComId(8)));
 
-        ProdutoDTO novosDados = dtoValido();
-        novosDados.setNome("Queijo canastra curado");
-        novosDados.setIdFornecedor(8);
-
-        ProdutoDTO atualizado = produtoService.atualizar(1, novosDados);
+        ProdutoDTO atualizado = produtoService.atualizar(1, atualizarDTO("Queijo canastra curado", 8));
 
         assertThat(atualizado.getNome()).isEqualTo("Queijo canastra curado");
         assertThat(atualizado.getIdFornecedor()).isEqualTo(8);
@@ -182,11 +187,7 @@ class ProdutoServiceTest {
         when(produtoRepository.findById(1)).thenReturn(Optional.of(produtoSalvo()));
         when(fornecedorRepository.findById(7)).thenReturn(Optional.of(fornecedorComId(7)));
 
-        ProdutoDTO novosDados = dtoValido();
-        novosDados.getVariantes().get(0).setMedida("999kg");
-        novosDados.getVariantes().get(0).setPreco(new BigDecimal("1.00"));
-
-        ProdutoDTO atualizado = produtoService.atualizar(1, novosDados);
+        ProdutoDTO atualizado = produtoService.atualizar(1, atualizarDTO("Queijo canastra curado", 7));
 
         assertThat(atualizado.getVariantes()).extracting(VarianteDTO::getMedida)
                 .containsExactly("500g", "1kg");
@@ -197,7 +198,7 @@ class ProdutoServiceTest {
     void atualizarFalhaQuandoProdutoNaoExiste() {
         when(produtoRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> produtoService.atualizar(99, dtoValido()))
+        assertThatThrownBy(() -> produtoService.atualizar(99, atualizarDTO("Queijo canastra", 7)))
                 .isInstanceOf(RecursoNaoEncontradoException.class);
     }
 

@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +12,12 @@ public class ManipuladorDeExcecoes {
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ProblemDetail tratarRecursoNaoEncontrado(RecursoNaoEncontradoException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail tratarViolacaoDeIntegridade(DataIntegrityViolationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
+                "Registro esta em uso por outro recurso e nao pode ser removido");
     }
 
     @ExceptionHandler(RegraDeNegocioException.class)

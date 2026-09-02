@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.service;
 
+import com.jacob.jp.projeto_extensao.dto.AtualizarProdutoDTO;
 import com.jacob.jp.projeto_extensao.dto.ProdutoDTO;
 import com.jacob.jp.projeto_extensao.dto.VarianteDTO;
 import com.jacob.jp.projeto_extensao.exception.RecursoNaoEncontradoException;
@@ -53,7 +54,7 @@ public class ProdutoService {
     }
 
     @Transactional
-    public ProdutoDTO atualizar(Integer id, ProdutoDTO dto) {
+    public ProdutoDTO atualizar(Integer id, AtualizarProdutoDTO dto) {
         Produto produto = buscarProduto(id);
         produto.atualizarDados(
                 dto.getNome(),

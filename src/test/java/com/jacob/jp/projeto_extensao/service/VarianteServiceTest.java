@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.service;
 
+import com.jacob.jp.projeto_extensao.dto.AtualizarVarianteDTO;
 import com.jacob.jp.projeto_extensao.dto.FornecedorDTO;
 import com.jacob.jp.projeto_extensao.dto.ProdutoDTO;
 import com.jacob.jp.projeto_extensao.dto.VarianteDTO;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,6 +58,13 @@ class VarianteServiceTest {
         dto.setMedida(medida);
         dto.setPreco(new BigDecimal(preco));
         dto.setEstoque(estoque);
+        return dto;
+    }
+
+    private static AtualizarVarianteDTO atualizarVarianteDTO(String medida, String preco) {
+        AtualizarVarianteDTO dto = new AtualizarVarianteDTO();
+        dto.setMedida(medida);
+        dto.setPreco(new BigDecimal(preco));
         return dto;
     }
 
@@ -121,8 +130,7 @@ class VarianteServiceTest {
         when(varianteRepository.findById(5)).thenReturn(Optional.of(existente));
         when(varianteRepository.findByProdutoIdAndMedida(1, "600g")).thenReturn(Optional.empty());
 
-        VarianteDTO novosDados = varianteDTO("600g", "54.90", 999);
-        VarianteDTO atualizada = varianteService.atualizar(5, novosDados);
+        VarianteDTO atualizada = varianteService.atualizar(5, atualizarVarianteDTO("600g", "54.90"));
 
         assertThat(atualizada.getMedida()).isEqualTo("600g");
         assertThat(atualizada.getPreco()).isEqualByComparingTo("54.90");
@@ -135,8 +143,7 @@ class VarianteServiceTest {
         when(varianteRepository.findById(5)).thenReturn(Optional.of(existente));
         when(varianteRepository.findByProdutoIdAndMedida(1, "500g")).thenReturn(Optional.of(existente));
 
-        VarianteDTO novosDados = varianteDTO("500g", "54.90", 12);
-        VarianteDTO atualizada = varianteService.atualizar(5, novosDados);
+        VarianteDTO atualizada = varianteService.atualizar(5, atualizarVarianteDTO("500g", "54.90"));
 
         assertThat(atualizada.getPreco()).isEqualByComparingTo("54.90");
         assertThat(atualizada.getMedida()).isEqualTo("500g");
@@ -170,6 +177,7 @@ class VarianteServiceTest {
 
     @Test
     void listarPorProdutoDevolveAsVariantesOrdenadasPorPreco() {
+        when(produtoRepository.findById(1)).thenReturn(Optional.of(produtoComId(1)));
         when(varianteRepository.findByProdutoIdOrderByPrecoAsc(1)).thenReturn(List.of(
                 varianteExistente(5, "500g", "49.90", 12),
                 varianteExistente(6, "1kg", "89.90", 5)));
@@ -177,16 +185,6 @@ class VarianteServiceTest {
         assertThat(varianteService.listarPorProduto(1))
                 .extracting(VarianteDTO::getMedida)
                 .containsExactly("500g", "1kg");
-    }
-
-    @Test
-    void deletarRemoveAVarianteEncontrada() {
-        Variante existente = varianteExistente(5, "500g", "49.90", 12);
-        when(varianteRepository.findById(5)).thenReturn(Optional.of(existente));
-
-        varianteService.deletar(5);
-
-        verify(varianteRepository).delete(existente);
     }
 
     @Test
@@ -198,5 +196,39 @@ class VarianteServiceTest {
                 .hasMessage("Variante 99 nao encontrada");
 
         verify(varianteRepository, never()).delete(any());
+    }
+
+    @Test
+    void deletarUltimaVarianteLancaRegraDeNegocio() {
+        when(varianteRepository.findById(5))
+                .thenReturn(Optional.of(varianteExistente(5, "500g", "49.90", 12)));
+        when(varianteRepository.countByProdutoId(1)).thenReturn(1L);
+
+        assertThatThrownBy(() -> varianteService.deletar(5))
+                .isInstanceOf(RegraDeNegocioException.class)
+                .hasMessageContaining("unica");
+
+        verify(varianteRepository, never()).delete(any());
+    }
+
+    @Test
+    void deletarVarianteQuandoHaOutrasRemoveNormalmente() {
+        Variante existente = varianteExistente(5, "500g", "49.90", 12);
+        when(varianteRepository.findById(5)).thenReturn(Optional.of(existente));
+        when(varianteRepository.countByProdutoId(1)).thenReturn(2L);
+
+        varianteService.deletar(5);
+
+        verify(varianteRepository).delete(existente);
+    }
+
+    @Test
+    void listarPorProdutoInexistenteLancaRecursoNaoEncontrado() {
+        when(produtoRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> varianteService.listarPorProduto(99))
+                .isInstanceOf(RecursoNaoEncontradoException.class);
+
+        verify(varianteRepository, never()).findByProdutoIdOrderByPrecoAsc(anyInt());
     }
 }

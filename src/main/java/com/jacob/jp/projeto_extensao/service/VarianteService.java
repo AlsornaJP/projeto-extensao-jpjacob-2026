@@ -1,5 +1,6 @@
 package com.jacob.jp.projeto_extensao.service;
 
+import com.jacob.jp.projeto_extensao.dto.AtualizarVarianteDTO;
 import com.jacob.jp.projeto_extensao.dto.VarianteDTO;
 import com.jacob.jp.projeto_extensao.exception.RecursoNaoEncontradoException;
 import com.jacob.jp.projeto_extensao.exception.RegraDeNegocioException;
@@ -25,6 +26,7 @@ public class VarianteService {
 
     @Transactional(readOnly = true)
     public List<VarianteDTO> listarPorProduto(Integer idProduto) {
+        buscarProduto(idProduto);
         return varianteRepository.findByProdutoIdOrderByPrecoAsc(idProduto).stream()
                 .map(VarianteDTO::new)
                 .toList();
@@ -39,7 +41,7 @@ public class VarianteService {
     }
 
     @Transactional
-    public VarianteDTO atualizar(Integer id, VarianteDTO dto) {
+    public VarianteDTO atualizar(Integer id, AtualizarVarianteDTO dto) {
         Variante variante = buscarVariante(id);
         garantirMedidaInedita(variante.getProduto().getId(), dto.getMedida(), id);
         variante.atualizarDados(dto.getMedida(), dto.getPreco());
@@ -66,7 +68,14 @@ public class VarianteService {
 
     @Transactional
     public void deletar(Integer id) {
-        varianteRepository.delete(buscarVariante(id));
+        Variante variante = buscarVariante(id);
+        Integer idProduto = variante.getProduto().getId();
+        if (varianteRepository.countByProdutoId(idProduto) <= 1) {
+            throw new RegraDeNegocioException(
+                    "A variante " + id + " e a unica do produto " + idProduto
+                            + "; apague o produto em vez da variante");
+        }
+        varianteRepository.delete(variante);
     }
 
     private Produto buscarProduto(Integer id) {

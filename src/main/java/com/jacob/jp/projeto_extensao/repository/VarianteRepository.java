@@ -12,4 +12,6 @@ public interface VarianteRepository extends JpaRepository<Variante, Integer> {
     Optional<Variante> findByProdutoIdAndMedida(Integer idProduto, String medida);
 
     List<Variante> findByProdutoIdOrderByPrecoAsc(Integer idProduto);
+
+    long countByProdutoId(Integer idProduto);
 }
