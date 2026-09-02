@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 public class Item {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -25,8 +24,8 @@ public class Item {
     private BigDecimal preco;
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="id_produto", referencedColumnName="id")
-    private Produto produto;
+    @JoinColumn(name="id_variante", referencedColumnName="id")
+    private Variante variante;
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="id_carrinho", referencedColumnName="id")

@@ -12,12 +12,20 @@ INSERT INTO fornecedores (nome_fornecedor) VALUES
 ('Alambique Sao Roque'),
 ('Doceria da Roca');
 
--- 3. Produtos (cada um com fornecedor obrigatorio)
-INSERT INTO produtos (nome_produto, descricao, preco, estoque, id_fornecedor) VALUES
-('Queijo Minas Artesanal 500g', 'Queijo curado tradicional da regiao de Tiradentes', 32.90, 40, 1),
-('Cachaca Envelhecida 700ml', 'Cachaca artesanal envelhecida em barril de carvalho', 65.00, 25, 2),
-('Doce de Leite Cremoso 300g', 'Doce de leite pastoso feito em tacho de cobre', 18.50, 60, 3),
-('Linguica Artesanal Defumada 1kg', 'Linguica suina temperada e defumada na lenha', 42.00, 15, 1);
+INSERT INTO produtos (nome_produto, descricao, id_fornecedor) VALUES
+('Queijo Minas Artesanal', 'Queijo curado tradicional da regiao de Tiradentes', 1),
+('Cachaca Envelhecida', 'Cachaca artesanal envelhecida em barril de carvalho', 2),
+('Doce de Leite Cremoso', 'Doce de leite pastoso feito em tacho de cobre', 3),
+('Linguica Artesanal Defumada', 'Linguica suina temperada e defumada na lenha', 1);
+
+-- 3b. Variantes (a unidade vendavel). O queijo e a cachaca tem duas medidas,
+INSERT INTO variantes (id_produto, medida, preco, estoque) VALUES
+(1, '500g',  32.90, 40),
+(1, '1kg',   61.90, 18),
+(2, '700ml', 65.00, 25),
+(2, '1L',    89.00, 10),
+(3, '300g',  18.50, 60),
+(4, '1kg',   42.00, 15);
 
 -- 4. Clientes (cada um com carrinho proprio)
 INSERT INTO clientes (nome_cliente, email, telefone, id_carrinho) VALUES
@@ -32,12 +40,12 @@ INSERT INTO enderecos (id_cliente, rua, bairro, cidade, estado, numero, compleme
 (2, 'Av. Getulio Vargas', 'Sao Jose', 'Sao Joao del-Rei', 'MG', 845, NULL, '36301000'),
 (3, 'Rua do Rosario', 'Praca', 'Ouro Preto', 'MG', 45, 'Fundos', '35400000');
 
--- 6. Itens (produtos dentro dos carrinhos)
-INSERT INTO itens (quantidade, preco, id_produto, id_carrinho) VALUES
-(2, 32.90, 1, 1),   -- Mariana: 2x Queijo Minas
-(1, 65.00, 2, 1),   -- Mariana: 1x Cachaca
-(3, 18.50, 3, 2),   -- Rafael: 3x Doce de Leite
-(1, 42.00, 4, 3);   -- Juliana: 1x Linguica
+-- 6. Itens (variantes dentro dos carrinhos).
+INSERT INTO itens (quantidade, preco, id_variante, id_carrinho) VALUES
+(2, 32.90, 1, 1),   -- Mariana: 2x Queijo Minas 500g
+(1, 65.00, 3, 1),   -- Mariana: 1x Cachaca 700ml
+(3, 18.50, 5, 2),   -- Rafael: 3x Doce de Leite 300g
+(1, 42.00, 6, 3);   -- Juliana: 1x Linguica 1kg
 
 -- Atualiza o preco_total dos carrinhos de acordo com os itens inseridos
 UPDATE carrinhos SET preco_total = 130.80 WHERE id = 1;  -- (2*32.90)+(1*65.00)

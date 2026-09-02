@@ -5,14 +5,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="produtos")
 @NoArgsConstructor
 @Getter
 public class Produto {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -24,15 +24,13 @@ public class Produto {
     @Column(name="descricao", nullable=false, length=500)
     private String descricao;
 
-    @Column(name="preco", nullable=false, precision=10, scale=2)
-    private BigDecimal preco;
-
-    @Column(name="estoque", nullable=false)
-    private Integer estoque;
-
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="id_fornecedor", referencedColumnName="id")
     private Fornecedor fornecedor;
+
+    @OneToMany(mappedBy="produto", cascade=CascadeType.ALL, orphanRemoval=true)
+    @OrderBy("preco ASC")
+    private List<Variante> variantes = new ArrayList<>();
 
     // As associacoes vindas do DTO chegam como ids e sao resolvidas na camada de servico.
 
@@ -40,8 +38,6 @@ public class Produto {
         this.id = dto.getId();
         this.nome = dto.getNome();
         this.descricao = dto.getDescricao();
-        this.preco = dto.getPreco();
-        this.estoque = dto.getEstoque() != null ? dto.getEstoque() : 0;
     }
 
     public Produto(ProdutoDTO dto, Fornecedor fornecedor) {
@@ -49,13 +45,17 @@ public class Produto {
         this.fornecedor = fornecedor;
     }
 
-    // Alteracao pontual dos campos: evita expor setters na entidade gerenciada.
-    // O estoque fica de fora de proposito: so muda por operacao dedicada, nunca por
-    // uma edicao de nome/preco.
-    public void atualizarDados(String nome, String descricao, BigDecimal preco, Fornecedor fornecedor) {
+    public void atualizarDados(String nome, String descricao, Fornecedor fornecedor) {
         this.nome = nome;
         this.descricao = descricao;
-        this.preco = preco;
         this.fornecedor = fornecedor;
+    }
+
+    public void adicionarVariante(Variante variante) {
+        this.variantes.add(variante);
+    }
+
+    public void removerVariante(Variante variante) {
+        this.variantes.remove(variante);
     }
 }
